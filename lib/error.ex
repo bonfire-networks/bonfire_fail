@@ -1,6 +1,6 @@
 Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
 
-defmodule Bonfire.Fail do
+defmodule Bonfire.Fail.Error do
   require Logger
   alias __MODULE__
   alias Ecto.Changeset
