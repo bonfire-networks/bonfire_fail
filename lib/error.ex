@@ -1,4 +1,4 @@
-Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
+if Code.ensure_loaded?(Bonfire.Common.Config), do: Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
 
 defmodule Bonfire.Fail.Error do
   require Logger
