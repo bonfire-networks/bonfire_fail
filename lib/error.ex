@@ -94,14 +94,14 @@ defmodule Bonfire.Fail.Error do
   end
 
   defp return(error) do
-    Logger.warn("#{inspect(error)}")
+    Logger.warn("#{inspect error}")
     error
   end
 
   # ... Handle other error types here ...
 
   defp handle(other, extra) do
-    Logger.error("Unhandled error type:\n#{inspect(other)} #{inspect(extra)}")
+    Logger.error("Unhandled error type:\n#{inspect other} #{inspect extra}")
     handle(:unknown, extra)
   end
 
