@@ -12,7 +12,7 @@ defmodule Bonfire.Fail.MixProject do
       deps: Mess.deps [
         {:phoenix_live_reload, "~> 1.2", only: :dev},
         {:dbg, "~> 1.0", only: :dev},
-        {:bonfire_common, git: "https://github.com/bonfire-ecosystem/bonfire_common", branch: "main", optional: true}
+        {:bonfire_common, git: "https://github.com/bonfire-networks/bonfire_common", branch: "main", optional: true}
       ]
     ]
   end
