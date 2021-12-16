@@ -1,4 +1,4 @@
-# Bonfire:Fail
+# Bonfire.Fail
 
 An library for [Bonfire](https://bonfire.cafe/) that contains:
 
