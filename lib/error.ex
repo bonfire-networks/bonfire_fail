@@ -1,7 +1,7 @@
 if Code.ensure_loaded?(Bonfire.Common.Config), do: Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
 
 defmodule Bonfire.Fail.Error do
-  require Logger
+  import Where
   alias __MODULE__
   alias Ecto.Changeset
 
@@ -94,14 +94,14 @@ defmodule Bonfire.Fail.Error do
   end
 
   defp return(error) do
-    Logger.warn("#{inspect error}")
+    warn("#{inspect error}")
     error
   end
 
   # ... Handle other error types here ...
 
   defp handle(other, extra) do
-    Logger.error("Unhandled error type:\n#{inspect other} #{inspect extra}")
+    error("Unhandled error type:\n#{inspect other} #{inspect extra}")
     handle(:unknown, extra)
   end
 
@@ -121,7 +121,7 @@ defmodule Bonfire.Fail.Error do
   end
 
   def metadata(code, extra) do
-    Logger.error("Unhandled error code: #{inspect(code)} #{inspect(extra)}")
+    error("Unhandled error code: #{inspect(code)} #{inspect(extra)}")
     {422, "Error (#{code}) #{inspect(extra)}"}
   end
 end
