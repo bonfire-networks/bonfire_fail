@@ -1,6 +1,6 @@
 if Code.ensure_loaded?(Bonfire.Common.Config), do: Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
 
-defmodule Bonfire.Fail.Error do
+defmodule Bonfire.Fail do
   import Where
   alias __MODULE__
   alias Ecto.Changeset
@@ -14,25 +14,25 @@ defmodule Bonfire.Fail.Error do
   # ------------
 
   # Regular errors
-  def error({:error, reason}) do
+  def fail({:error, reason}) do
     handle(reason)
   end
 
-  def error({:error, reason, extra}) do
+  def fail({:error, reason, extra}) do
     handle(reason, extra)
   end
 
   # Ecto transaction errors
-  def error({:error, _operation, reason, _changes}) do
+  def fail({:error, _operation, reason, _changes}) do
     handle(reason)
   end
 
   # Unhandled errors
-  def error(other) do
+  def fail(other) do
     handle(other)
   end
 
-  def error(other, extra) do
+  def fail(other, extra) do
     handle(other, extra)
   end
 
@@ -47,7 +47,7 @@ defmodule Bonfire.Fail.Error do
   defp handle(code, extra) when is_atom(code) do
     {status, message} = metadata(code, extra)
 
-    return(%Error{
+    return(%Fail{
       code: code,
       message: message,
       status: status
@@ -55,7 +55,7 @@ defmodule Bonfire.Fail.Error do
   end
 
   defp handle(status, extra) when is_integer(status) do
-    return(%Error{
+    return(%Fail{
       code: status,
       message: "#{extra}",
       status: status
@@ -65,7 +65,7 @@ defmodule Bonfire.Fail.Error do
   defp handle(message, extra) when is_binary(message) do
     status = 500
 
-    return(%Error{
+    return(%Fail{
       code: status,
       message: "#{message} #{extra}",
       status: status
@@ -80,7 +80,7 @@ defmodule Bonfire.Fail.Error do
     changeset
     |> Ecto.Changeset.traverse_errors(fn {err, _opts} -> err end)
     |> Enum.map(fn {k, v} ->
-      return(%Error{
+      return(%Fail{
         code: :validation,
         message: String.capitalize("#{k} #{v}"),
         status: 422
@@ -94,7 +94,7 @@ defmodule Bonfire.Fail.Error do
   end
 
   defp return(error) do
-    warn("#{inspect error}")
+    warn(error)
     error
   end
 
