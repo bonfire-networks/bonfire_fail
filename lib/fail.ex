@@ -1,7 +1,7 @@
 if Code.ensure_loaded?(Bonfire.Common.Config), do: Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
 
 defmodule Bonfire.Fail do
-  import Where
+  import Untangle
   alias __MODULE__
   alias Ecto.Changeset
 
