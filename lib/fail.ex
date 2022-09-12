@@ -1,4 +1,5 @@
-if Code.ensure_loaded?(Bonfire.Common.Config), do: Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
+if Code.ensure_loaded?(Bonfire.Common.Config),
+  do: Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
 
 defmodule Bonfire.Fail do
   import Untangle
@@ -89,8 +90,8 @@ defmodule Bonfire.Fail do
   end
 
   def changeset_nessage(%Changeset{} = changeset) do
-    {_key, {message, _args}} = changeset.errors |> List.first()
-    message |> String.trim("\"")
+    {_key, {message, _args}} = List.first(changeset.errors)
+    String.trim(message, "\"")
   end
 
   defp return(error) do
@@ -101,7 +102,7 @@ defmodule Bonfire.Fail do
   # ... Handle other error types here ...
 
   defp handle(other, extra) do
-    error("Unhandled error type:\n#{inspect other} #{inspect extra}")
+    error("Unhandled error type:\n#{inspect(other)} #{inspect(extra)}")
     handle(:unknown, extra)
   end
 
