@@ -8,7 +8,6 @@ defmodule Bonfire.Fail do
 
   @impl true
   def exception(value) do
-
     # if Code.ensure_loaded?(Bonfire.Common.Config) do
     #   error(value)
     #   Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
@@ -129,7 +128,11 @@ defmodule Bonfire.Fail do
         {status, "#{show}"}
       end
     else
-      error(extra, "Undefined error code (you may want to add it to `config :bonfire_fail, :common_errors`): #{inspect(error_term)}")
+      error(
+        extra,
+        "Undefined error code (you may want to add it to `config :bonfire_fail, :common_errors`): #{inspect(error_term)}"
+      )
+
       {422, "Error (#{error_term}) #{inspect(extra)}"}
     end
   end
