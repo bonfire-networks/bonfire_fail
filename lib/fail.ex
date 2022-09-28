@@ -1,15 +1,21 @@
-if Code.ensure_loaded?(Bonfire.Common.Config),
-  do: Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
-
 defmodule Bonfire.Fail do
   import Untangle
   alias __MODULE__
   alias Ecto.Changeset
 
-  defstruct [:code, :message, :status]
+  # defstruct [:code, :message, :status]
+  defexception [:code, :message, :status]
 
-  @common_errors Application.compile_env(:bonfire_fail, :common_errors, %{})
-  @error_list Map.keys(@common_errors)
+  @impl true
+  def exception(value) do
+
+    # if Code.ensure_loaded?(Bonfire.Common.Config) do
+    #   error(value)
+    #   Bonfire.Common.Config.require_extension_config!(:bonfire_fail)
+    # end
+
+    fail(value)
+  end
 
   # Error Tuples
   # ------------
@@ -43,7 +49,7 @@ defmodule Bonfire.Fail do
   defp handle(reason, extra \\ "")
 
   defp handle(reason, %Ecto.Changeset{} = changeset),
-    do: handle(reason, changeset_nessage(changeset))
+    do: handle(reason, changeset_message(changeset))
 
   defp handle(code, extra) when is_atom(code) do
     {status, message} = metadata(code, extra)
@@ -89,40 +95,47 @@ defmodule Bonfire.Fail do
     end)
   end
 
-  def changeset_nessage(%Changeset{} = changeset) do
+  # ... Handle other error types here ...
+  defp handle(other, extra) do
+    error(extra, "Unhandled error type: #{inspect(other)}")
+    handle(:unknown, extra)
+  end
+
+  def changeset_message(%Changeset{} = changeset) do
     {_key, {message, _args}} = List.first(changeset.errors)
     String.trim(message, "\"")
   end
 
   defp return(error) do
-    warn(error)
+    error(error)
     error
-  end
-
-  # ... Handle other error types here ...
-
-  defp handle(other, extra) do
-    error("Unhandled error type:\n#{inspect(other)} #{inspect(extra)}")
-    handle(:unknown, extra)
   end
 
   # Build Error Metadata
   # --------------------
   def metadata(error_term, error_applies_to \\ "")
 
-  def metadata(error_term, extra) when error_term in @error_list do
-    {status, message} = @common_errors[error_term]
-    show = String.replace(message, "%s", extra)
+  def metadata(error_term, extra) when is_atom(error_term) do
+    common_errors = Application.get_env(:bonfire_fail, :common_errors, %{})
+    error_list = Map.keys(common_errors)
 
-    if show == message do
-      {status, "#{show} #{extra}"}
+    if error_term in error_list do
+      {status, message} = common_errors[error_term]
+      show = String.replace(message, "%s", extra)
+
+      if show == message do
+        {status, "#{show} #{extra}"}
+      else
+        {status, "#{show}"}
+      end
     else
-      {status, "#{show}"}
+      error(extra, "Undefined error code (you may want to add it to `config :bonfire_fail, :common_errors`): #{inspect(error_term)}")
+      {422, "Error (#{error_term}) #{inspect(extra)}"}
     end
   end
 
   def metadata(code, extra) do
-    error("Unhandled error code: #{inspect(code)} #{inspect(extra)}")
+    error(extra, "Bonfire.Fail expected an atom, but got #{inspect(code)}")
     {422, "Error (#{code}) #{inspect(extra)}"}
   end
 end
