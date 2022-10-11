@@ -16,7 +16,6 @@ defmodule Bonfire.Fail.RuntimeConfig do
       common_errors: %{
         unauthorized: {403, l("You do not have permission to %s.")},
         not_found: {404, l("%s Not Found.")},
-        unauthenticated: {401, l("You need to log in first.")},
         needs_login: {401, l("You need to log in first.")},
         invalid_credentials:
           {401, l("We couldn't find an account with the details you provided.")},
