@@ -33,6 +33,10 @@ defmodule Bonfire.Fail do
     handle(reason)
   end
 
+  def fail({key, extra}) do
+    handle(key, extra)
+  end
+
   # Unhandled errors
   def fail(other) do
     handle(other)

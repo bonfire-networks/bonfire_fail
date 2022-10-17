@@ -15,6 +15,7 @@ defmodule Bonfire.Fail.RuntimeConfig do
     config :bonfire_fail,
       common_errors: %{
         unauthorized: {403, l("You do not have permission to %s.")},
+        unauthorised: {403, l("You do not have permission to %s.")},
         not_found: {404, l("%s Not Found.")},
         needs_login: {401, l("You need to log in first.")},
         invalid_credentials:
