@@ -1,0 +1,6 @@
+digraph "xref graph" {
+  "lib/auth.ex"
+  "lib/auth.ex" -> "lib/fail.ex"
+  "lib/fail.ex"
+  "lib/runtime_config.ex"
+}
