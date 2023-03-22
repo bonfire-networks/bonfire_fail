@@ -114,35 +114,68 @@ defmodule Bonfire.Fail do
     error
   end
 
+  def list_errors() do
+    Application.get_env(:bonfire_fail, :common_errors, [])
+  end
+
+  def get_error(error_term) when is_atom(error_term) do
+    list_errors()[error_term]
+  end
+
+  def get_error(error_term) when is_binary(error_term) do
+    maybe_to_atom!(error_term)
+    |> get_error()
+  end
+
+  def get_error_msg(error_term, error_applies_to \\ "") do
+    case get_error(error_term) do
+      {_status, message} ->
+        show_error_msg(message, error_applies_to)
+
+      _ ->
+        nil
+    end
+  end
+
+  defp show_error_msg(message, extra) do
+    show = String.replace(message, "%s", extra)
+
+    if show == message do
+      "#{show} #{extra}"
+    else
+      show
+    end
+  end
+
   # Build Error Metadata
   # --------------------
   def metadata(error_term, error_applies_to \\ "")
 
   def metadata(error_term, extra) when is_atom(error_term) do
-    common_errors = Application.get_env(:bonfire_fail, :common_errors, %{})
-    error_list = Map.keys(common_errors)
+    case get_error(error_term) do
+      {status, message} ->
+        {status, show_error_msg(message, extra)}
 
-    if error_term in error_list do
-      {status, message} = common_errors[error_term]
-      show = String.replace(message, "%s", extra)
+      _ ->
+        error(
+          extra,
+          "Undefined error code (you may want to add it to `config :bonfire_fail, :common_errors`): #{inspect(error_term)}"
+        )
 
-      if show == message do
-        {status, "#{show} #{extra}"}
-      else
-        {status, "#{show}"}
-      end
-    else
-      error(
-        extra,
-        "Undefined error code (you may want to add it to `config :bonfire_fail, :common_errors`): #{inspect(error_term)}"
-      )
-
-      {422, "Error (#{error_term}) #{inspect(extra)}"}
+        {422, "Error (#{error_term}) #{inspect(extra)}"}
     end
   end
 
   def metadata(code, extra) do
     error(extra, "Bonfire.Fail expected an atom, but got #{inspect(code)}")
     {422, "Error (#{code}) #{inspect(extra)}"}
+  end
+
+  defp maybe_to_atom!(str) when is_binary(str) do
+    try do
+      String.to_existing_atom(str)
+    rescue
+      ArgumentError -> nil
+    end
   end
 end

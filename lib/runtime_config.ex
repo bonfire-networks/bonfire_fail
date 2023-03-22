@@ -14,7 +14,7 @@ defmodule Bonfire.Fail.RuntimeConfig do
       disabled: false
 
     config :bonfire_fail,
-      common_errors: %{
+      common_errors: [
         unauthorized: {403, l("You do not have permission to %s.")},
         unauthorised: {403, l("You do not have permission to %s.")},
         not_found: {404, l("%s Not Found.")},
@@ -36,7 +36,8 @@ defmodule Bonfire.Fail.RuntimeConfig do
         invalid_argument: {400, l("Invalid arguments passed.")},
         password_hash_missing: {401, l("Reset your password to login.")},
         user_not_found: {404, l("User not found.")},
-        unknown: {500, l("Something went wrong.")}
-      }
+        unknown: {500, l("Something went wrong.")},
+        nil: {500, l("There was an unknown error.")}
+      ]
   end
 end
