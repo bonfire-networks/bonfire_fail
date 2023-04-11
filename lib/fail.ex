@@ -54,20 +54,30 @@ defmodule Bonfire.Fail do
   defp handle(reason, %Ecto.Changeset{} = changeset),
     do: handle(reason, changeset_message(changeset))
 
-  defp handle(code, extra) when is_atom(code) do
-    {status, message} = metadata(code, extra)
+  defp handle(name, extra) when is_atom(name) do
+    {status, message} = metadata(name, extra)
 
     return(%Fail{
-      code: code,
+      code: name,
       message: message,
       status: status
     })
   end
 
-  defp handle(status, extra) when is_integer(status) do
+  defp handle(http_code, extra) when is_integer(http_code) do
+    {name, status, message} =
+      case get_error(http_code) do
+        nil ->
+          {nil, http_code, extra}
+
+        {name, message} ->
+          {status, message} = metadata(name, extra)
+          {name, status, message}
+      end
+
     return(%Fail{
-      code: status,
-      message: "#{extra}",
+      code: name,
+      message: message,
       status: status
     })
   end
@@ -118,8 +128,23 @@ defmodule Bonfire.Fail do
     Application.get_env(:bonfire_fail, :common_errors, [])
   end
 
+  def list_http_errors() do
+    list_errors()
+    |> Enum.map(fn
+      {name, {http_code, msg}} -> {http_code, {name, msg}}
+    end)
+  end
+
   def get_error(error_term) when is_atom(error_term) do
     list_errors()[error_term]
+  end
+
+  def get_error(http_code) when is_integer(http_code) do
+    list_errors()
+    |> Enum.find_value(fn
+      {name, {^http_code, msg}} -> {name, msg}
+      _ -> nil
+    end)
   end
 
   def get_error(error_term) when is_binary(error_term) do
@@ -127,10 +152,20 @@ defmodule Bonfire.Fail do
     |> get_error()
   end
 
-  def get_error_msg(error_term, error_applies_to \\ "") do
+  def get_error_tuple(error_term, error_applies_to \\ "") do
     case get_error(error_term) do
+      {status, message} ->
+        {status, show_error_msg(message, error_applies_to)}
+
+      _ ->
+        nil
+    end
+  end
+
+  def get_error_msg(error_term, error_applies_to \\ "") do
+    case get_error_tuple(error_term, error_applies_to) do
       {_status, message} ->
-        show_error_msg(message, error_applies_to)
+        message
 
       _ ->
         nil
