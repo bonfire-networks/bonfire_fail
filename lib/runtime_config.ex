@@ -39,7 +39,8 @@ defmodule Bonfire.Fail.RuntimeConfig do
         not_found: {404, l("%s Not Found.")},
         user_not_found: {404, l("User not found.")},
         unknown: {500, l("Something went wrong.")},
-        nil: {500, l("There was an unknown error.")}
+        nil: {500, l("There was an unknown error.")},
+        nil: {503, l("The server is overloaded.")}
       ]
   end
 end
