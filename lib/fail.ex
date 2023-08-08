@@ -20,51 +20,49 @@ defmodule Bonfire.Fail do
   # ------------
 
   # Regular errors
-  def fail({:error, reason}) do
-    handle(reason)
+  def fail(reason, extra \\ nil, struct \\ Fail)
+
+  def fail({:error, reason}, extra, struct) do
+    handle(reason, extra, struct)
   end
 
-  def fail({:error, reason, extra}) do
-    handle(reason, extra)
+  def fail({:error, reason, extra}, _extra, struct) do
+    handle(reason, extra, struct)
   end
 
   # Ecto transaction errors
-  def fail({:error, _operation, reason, _changes}) do
-    handle(reason)
+  def fail({:error, _operation, reason, _changes}, extra, struct) do
+    handle(reason, extra, struct)
   end
 
-  def fail({key, extra}) do
-    handle(key, extra)
+  def fail({key, extra}, _extra, struct) do
+    handle(key, extra, struct)
   end
 
-  # Unhandled errors
-  def fail(other) do
-    handle(other)
-  end
-
-  def fail(other, extra) do
-    handle(other, extra)
+  # Other errors
+  def fail(other, extra, struct) do
+    handle(other, extra, struct)
   end
 
   # Handle Different Errors
   # -----------------------
 
-  defp handle(reason, extra \\ "")
+  defp handle(reason, extra \\ nil, struct \\ Fail)
 
-  defp handle(reason, %Ecto.Changeset{} = changeset),
-    do: handle(reason, changeset_message(changeset))
+  defp handle(reason, %Ecto.Changeset{} = changeset, struct ),
+    do: handle(reason, changeset_message(changeset), struct )
 
-  defp handle(name, extra) when is_atom(name) do
+  defp handle(name, extra, struct ) when is_atom(name) do
     {status, message} = metadata(name, extra)
 
-    return(%Fail{
+    return(struct, %{
       code: name,
       message: message,
       status: status
     })
   end
 
-  defp handle(http_code, extra) when is_integer(http_code) do
+  defp handle(http_code, extra, struct ) when is_integer(http_code) do
     {name, status, message} =
       case get_error(http_code) do
         nil ->
@@ -75,32 +73,36 @@ defmodule Bonfire.Fail do
           {name, status, message}
       end
 
-    return(%Fail{
+    return(struct, %{
       code: name,
       message: message,
       status: status
     })
   end
 
-  defp handle(message, extra) when is_binary(message) do
-    status = 500
+  defp handle(message, extra, struct ) when is_binary(message) do
+    case Bonfire.Common.Types.maybe_to_atom(message) do
+      nil -> 
+        status = 500
 
-    return(%Fail{
-      code: status,
-      message: "#{message} #{extra}",
-      status: status
-    })
+        return(struct, %{
+          code: status,
+          message: "#{message} #{extra}",
+          status: status
+        })
+      code -> handle(code, extra, struct )
+        end
   end
 
-  defp handle(errors, _) when is_list(errors) do
-    Enum.map(errors, &handle/1)
+  defp handle(errors, _, struct ) when is_list(errors) do
+    Enum.map(errors, &handle(&1, nil, struct))
   end
 
-  defp handle(%Ecto.Changeset{} = changeset, _) do
+  defp handle(%Ecto.Changeset{} = changeset, _, struct ) do
     changeset
     |> Ecto.Changeset.traverse_errors(fn {err, _opts} -> err end)
     |> Enum.map(fn {k, v} ->
-      return(%Fail{
+      return(struct, %{
         code: :validation,
         message: String.capitalize("#{k} #{v}"),
         status: 422
@@ -109,9 +111,9 @@ defmodule Bonfire.Fail do
   end
 
   # ... Handle other error types here ...
-  defp handle(other, extra) do
+  defp handle(other, extra, struct ) do
     error(extra, "Unhandled error type: #{inspect(other)}")
-    handle(:unknown, extra)
+    handle(:unknown, extra, struct )
   end
 
   def changeset_message(%Changeset{} = changeset) do
@@ -119,9 +121,9 @@ defmodule Bonfire.Fail do
     String.trim(message, "\"")
   end
 
-  defp return(error) do
+  defp return(struct \\ Fail, error) do
     error(error)
-    error
+    struct(struct, error)
   end
 
   def list_errors() do
@@ -173,7 +175,7 @@ defmodule Bonfire.Fail do
   end
 
   defp show_error_msg(message, extra) do
-    show = String.replace(message, "%s", extra)
+    show = String.replace(message, "%s", extra || "")
 
     if show == message do
       "#{show} #{extra}"
@@ -213,4 +215,18 @@ defmodule Bonfire.Fail do
       ArgumentError -> nil
     end
   end
+end
+
+defimpl Plug.Exception, for: Bonfire.Fail do
+  import Untangle
+
+  def status(%{status: code} = _exception) do
+    #info(exception, "return right code")
+    code
+  end
+  def status(_exception) do
+    500
+  end
+
+  def actions(_exception), do: []
 end
