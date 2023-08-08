@@ -49,10 +49,10 @@ defmodule Bonfire.Fail do
 
   defp handle(reason, extra \\ nil, struct \\ Fail)
 
-  defp handle(reason, %Ecto.Changeset{} = changeset, struct ),
-    do: handle(reason, changeset_message(changeset), struct )
+  defp handle(reason, %Ecto.Changeset{} = changeset, struct),
+    do: handle(reason, changeset_message(changeset), struct)
 
-  defp handle(name, extra, struct ) when is_atom(name) do
+  defp handle(name, extra, struct) when is_atom(name) do
     {status, message} = metadata(name, extra)
 
     return(struct, %{
@@ -62,7 +62,7 @@ defmodule Bonfire.Fail do
     })
   end
 
-  defp handle(http_code, extra, struct ) when is_integer(http_code) do
+  defp handle(http_code, extra, struct) when is_integer(http_code) do
     {name, status, message} =
       case get_error(http_code) do
         nil ->
@@ -80,9 +80,9 @@ defmodule Bonfire.Fail do
     })
   end
 
-  defp handle(message, extra, struct ) when is_binary(message) do
+  defp handle(message, extra, struct) when is_binary(message) do
     case Bonfire.Common.Types.maybe_to_atom(message) do
-      nil -> 
+      nil ->
         status = 500
 
         return(struct, %{
@@ -90,15 +90,17 @@ defmodule Bonfire.Fail do
           message: "#{message} #{extra}",
           status: status
         })
-      code -> handle(code, extra, struct )
-        end
+
+      code ->
+        handle(code, extra, struct)
+    end
   end
 
-  defp handle(errors, _, struct ) when is_list(errors) do
+  defp handle(errors, _, struct) when is_list(errors) do
     Enum.map(errors, &handle(&1, nil, struct))
   end
 
-  defp handle(%Ecto.Changeset{} = changeset, _, struct ) do
+  defp handle(%Ecto.Changeset{} = changeset, _, struct) do
     changeset
     |> Ecto.Changeset.traverse_errors(fn {err, _opts} -> err end)
     |> Enum.map(fn {k, v} ->
@@ -111,9 +113,9 @@ defmodule Bonfire.Fail do
   end
 
   # ... Handle other error types here ...
-  defp handle(other, extra, struct ) do
+  defp handle(other, extra, struct) do
     error(extra, "Unhandled error type: #{inspect(other)}")
-    handle(:unknown, extra, struct )
+    handle(:unknown, extra, struct)
   end
 
   def changeset_message(%Changeset{} = changeset) do
@@ -221,9 +223,10 @@ defimpl Plug.Exception, for: Bonfire.Fail do
   import Untangle
 
   def status(%{status: code} = _exception) do
-    #info(exception, "return right code")
+    # info(exception, "return right code")
     code
   end
+
   def status(_exception) do
     500
   end
