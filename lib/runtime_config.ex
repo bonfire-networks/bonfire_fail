@@ -10,8 +10,8 @@ defmodule Bonfire.Fail.RuntimeConfig do
   def config do
     import Config
 
-    config :bonfire_fail,
-      disabled: false
+    # config :bonfire_fail,
+    #   modularity: :disabled
 
     config :bonfire_fail,
       common_errors: [
