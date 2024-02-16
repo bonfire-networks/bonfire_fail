@@ -152,8 +152,11 @@ defmodule Bonfire.Fail do
   end
 
   def get_error(error_term) when is_binary(error_term) do
-    maybe_to_atom!(error_term)
-    |> get_error()
+    case maybe_to_atom!(error_term) do
+      nil -> nil
+      false -> false
+      error_term -> get_error(error_term)
+    end
   end
 
   def get_error_tuple(error_term, error_applies_to \\ "") do
