@@ -219,7 +219,7 @@ defmodule Bonfire.Fail do
        when is_atom(error_term) or is_integer(error_term) do
     status = Plug.Conn.Status.code(error_term)
     {status, show_error_msg(Plug.Conn.Status.reason_phrase(status), extra)}
-  catch
+       rescue
     FunctionClauseError ->
       error(
         extra,
@@ -230,7 +230,7 @@ defmodule Bonfire.Fail do
   end
 
   defp metadata_fallback(code, extra) do
-    {422, "Error (#{code}) #{inspect(extra)}"}
+    {422, show_error_msg("Error (#{code})", extra)}
   end
 
   defp maybe_to_atom!(str) when is_binary(str) do
