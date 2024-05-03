@@ -22,6 +22,7 @@ defmodule Bonfire.Fail.RuntimeConfig do
     # config :bonfire_fail,
     #   modularity: :disabled
 
+    # NOTE: only add here any that are not already covered by https://hexdocs.pm/plug/Plug.Conn.Status.html#code/1-known-status-codes
     config :bonfire_fail,
       common_errors: [
         bad_request: {400, l("Invalid request.")},

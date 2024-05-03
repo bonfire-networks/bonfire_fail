@@ -124,8 +124,9 @@ defmodule Bonfire.Fail do
   end
 
   defp return(struct \\ Fail, error) do
-    error(error)
-    struct(struct, error)
+    fail = struct(struct, error)
+    error(fail)
+    fail
   end
 
   def list_errors() do
@@ -179,7 +180,7 @@ defmodule Bonfire.Fail do
     end
   end
 
-  defp show_error_msg(message, extra) do
+  defp show_error_msg(message, extra) when is_binary(extra) or is_nil(extra) do
     show = String.replace(message, "%s", extra || "")
 
     if show == message do
@@ -188,6 +189,8 @@ defmodule Bonfire.Fail do
       show
     end
   end
+
+  defp show_error_msg(message, extra), do: show_error_msg(message, inspect(extra))
 
   # Build Error Metadata
   # --------------------
@@ -199,17 +202,34 @@ defmodule Bonfire.Fail do
         {status, show_error_msg(message, extra)}
 
       _ ->
-        error(
-          extra,
-          "Undefined error code (you may want to add it to `config :bonfire_fail, :common_errors`): #{inspect(error_term)}"
-        )
-
-        {422, "Error (#{error_term}) #{inspect(extra)}"}
+        maybe_http_metadata(error_term, extra)
     end
   end
 
-  def metadata(code, extra) do
-    error(extra, "Bonfire.Fail expected an atom, but got #{inspect(code)}")
+  def metadata(status, extra) when is_integer(status) do
+    maybe_http_metadata(status, extra)
+  end
+
+  def metadata(error_term, extra) do
+    error(extra, "Bonfire.Fail expected an atom, but got #{inspect(error_term)}")
+    metadata_fallback(error_term, extra)
+  end
+
+  defp maybe_http_metadata(error_term, extra)
+       when is_atom(error_term) or is_integer(error_term) do
+    status = Plug.Conn.Status.code(error_term)
+    {status, show_error_msg(Plug.Conn.Status.reason_phrase(status), extra)}
+  catch
+    FunctionClauseError ->
+      error(
+        extra,
+        "Undefined error code: you may want to use an error code known to `Plug.Conn.Status`, or one that's included in `config :bonfire_fail, :common_errors` (which you can add to if needed): #{inspect(error_term)}"
+      )
+
+      metadata_fallback(error_term, extra)
+  end
+
+  defp metadata_fallback(code, extra) do
     {422, "Error (#{code}) #{inspect(extra)}"}
   end
 
