@@ -219,7 +219,7 @@ defmodule Bonfire.Fail do
        when is_atom(error_term) or is_integer(error_term) do
     status = Plug.Conn.Status.code(error_term)
     {status, show_error_msg(Plug.Conn.Status.reason_phrase(status), extra)}
-       rescue
+  rescue
     FunctionClauseError ->
       error(
         extra,
