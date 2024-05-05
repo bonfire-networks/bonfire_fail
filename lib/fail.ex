@@ -1,4 +1,6 @@
 defmodule Bonfire.Fail do
+  @moduledoc "./README.md" |> File.stream!() |> Enum.drop(1) |> Enum.join()
+
   import Untangle
   alias __MODULE__
   alias Ecto.Changeset
