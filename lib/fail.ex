@@ -9,6 +9,10 @@ defmodule Bonfire.Fail do
   defexception [:code, :message, :status]
 
   @impl true
+  def exception([{reason, extra}]) do
+    fail(reason, extra)
+  end
+
   def exception(value) do
     # if Code.ensure_loaded?(Bonfire.Common.Config) do
     #   error(value)
