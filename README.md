@@ -2,7 +2,8 @@
 
 An library for [Bonfire](https://bonfire.cafe/) that contains:
 
-- Mapping of error atoms to HTTP codes and friendly messages (see https://hexdocs.pm/plug/Plug.Conn.Status.html#code/1-known-status-codes and `Bonfire.Fail.RuntimeConfig` for built-in lists of errors, which you can extend)
+- Handling, standardizing, and formatting errors and error messages
+- Mapping of error atoms, exceptions, and Changesets to HTTP codes and friendly messages (see https://hexdocs.pm/plug/Plug.Conn.Status.html#code/1-known-status-codes and `Bonfire.Fail.RuntimeConfig` for built-in lists of errors, which you can extend)
 - `Bonfire.Fail` error struct (e.g. `%Bonfire.Fail{code: :gateway_timeout, message: "Gateway Timeout", status: 504`)
 - `Bonfire.Fail` and `Bonfire.Fail.Auth` exceptions (e.g. `raise Bonfire.Fail, :unauthorized` or `raise Bonfire.Fail.Auth, :needs_login`)
 

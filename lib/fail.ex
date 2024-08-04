@@ -25,6 +25,24 @@ defmodule Bonfire.Fail do
   # Error Tuples
   # ------------
 
+  @doc """
+  Creates a Bonfire.Fail exception from the given reason and extra information.
+
+  ## Parameters
+
+    - reason: The error reason, which can be an atom, tuple, or other value.
+    - extra: Additional information about the error (optional).
+    - struct: The struct to use for the error (default: Bonfire.Fail).
+
+  ## Examples
+
+      iex> Bonfire.Fail.fail(:not_found)
+      %Bonfire.Fail{code: :not_found, message: "Not Found", status: 404}
+
+      iex> Bonfire.Fail.fail({:error, :unauthorized}, "Access denied")
+      %Bonfire.Fail{code: :unauthorized, message: "Unauthorized: Access denied", status: 401}
+  """
+
   # Regular errors
   def fail(reason, extra \\ nil, struct \\ Fail)
 
@@ -135,10 +153,26 @@ defmodule Bonfire.Fail do
     fail
   end
 
+  @doc """
+  Lists all defined common errors.
+
+  ## Examples
+
+      iex> Bonfire.Fail.list_errors()
+      [not_found: {404, "Not Found"}, unauthorized: {401, "Unauthorized"}, ...]
+  """
   def list_errors() do
     Application.get_env(:bonfire_fail, :common_errors, [])
   end
 
+  @doc """
+  Lists all defined HTTP errors.
+
+  ## Examples
+
+      iex> Bonfire.Fail.list_http_errors()
+      [{404, {:not_found, "Not Found"}}, {401, {:unauthorized, "Unauthorized"}}, ...]
+  """
   def list_http_errors() do
     list_errors()
     |> Enum.map(fn
@@ -146,6 +180,24 @@ defmodule Bonfire.Fail do
     end)
   end
 
+  @doc """
+  Retrieves the error details for a given error term.
+
+  ## Parameters
+
+    - error_term: The error term to look up (atom, integer, or string).
+
+  ## Examples
+
+      iex> Bonfire.Fail.get_error(:not_found)
+      {404, "%s Not Found."}
+
+      iex> Bonfire.Fail.get_error(404)
+      {:not_found, "%s Not Found."}
+      
+      iex> Bonfire.Fail.get_error("not_found")
+      {404, "%s Not Found."}
+  """
   def get_error(error_term) when is_atom(error_term) do
     list_errors()[error_term]
   end
@@ -166,6 +218,22 @@ defmodule Bonfire.Fail do
     end
   end
 
+  @doc """
+  Retrieves the error tuple (status and message) for a given error term.
+
+  ## Parameters
+
+    - error_term: The error term to look up.
+    - error_applies_to: Additional context for the error message (optional).
+
+  ## Examples
+
+      iex> Bonfire.Fail.get_error_tuple(:not_found)
+      {404, "Not Found"}
+
+      iex> Bonfire.Fail.get_error_tuple(:unauthorized, "User")
+      {401, "Unauthorized: User"}
+  """
   def get_error_tuple(error_term, error_applies_to \\ "") do
     case get_error(error_term) do
       {status, message} ->
@@ -176,6 +244,22 @@ defmodule Bonfire.Fail do
     end
   end
 
+  @doc """
+  Retrieves the error message for a given error term.
+
+  ## Parameters
+
+    - error_term: The error term to look up.
+    - error_applies_to: Additional context for the error message (optional).
+
+  ## Examples
+
+      iex> Bonfire.Fail.get_error_msg(:not_found)
+      "Not Found"
+
+      iex> Bonfire.Fail.get_error_msg(:unauthorized, "User")
+      "Unauthorized: User"
+  """
   def get_error_msg(error_term, error_applies_to \\ "") do
     case get_error_tuple(error_term, error_applies_to) do
       {_status, message} ->
@@ -198,8 +282,22 @@ defmodule Bonfire.Fail do
 
   defp show_error_msg(message, extra), do: show_error_msg(message, inspect(extra))
 
-  # Build Error Metadata
-  # --------------------
+  @doc """
+  Generates metadata (status code and message) for a given error term.
+
+  ## Parameters
+
+    - error_term: The error term to generate metadata for.
+    - error_applies_to: Additional context for the error message (optional).
+
+  ## Examples
+
+      iex> Bonfire.Fail.metadata(:not_found)
+      {404, "Not Found"}
+
+      iex> Bonfire.Fail.metadata(:unauthorized, "User")
+      {401, "Unauthorized: User"}
+  """
   def metadata(error_term, error_applies_to \\ "")
 
   def metadata(error_term, extra) when is_atom(error_term) do
