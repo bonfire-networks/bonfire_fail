@@ -34,7 +34,12 @@ defmodule Bonfire.Fail.RuntimeConfig do
         password_hash_missing: {401, l("Reset your password to login.")},
         invalid_credentials:
           {401, l("We couldn't find an account with the details you provided.")},
-        inactive_user: {401, l("You may need to get in touch with the instance moderators.")},
+        inactive_user:
+          {403,
+           l("Could not continue. You may need to get in touch with the instance moderators.")},
+        spam:
+          {403,
+           l("Could not continue. You may need to get in touch with the instance moderators.")},
         unauthorized: {403, l("You do not have permission %s")},
         # eh, anglos
         unauthorised: {403, l("You do not have permission %s")},
