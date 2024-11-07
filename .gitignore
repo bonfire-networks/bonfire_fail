@@ -1,8 +1,11 @@
-# The directories Mix will write compiled artifacts to.
+# The directories Mix/etc will write compiled artifacts to.
 /_build/
 .cache
 .hex
 .mix
+assets/node_modules
+assets/*.log
+priv/cldr
 
 # If you run "mix test --cover", coverage assets end up here.
 /cover/
@@ -23,7 +26,9 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-bonfire_web_phoenix-*.tar
+bonfire_*-*.tar
 
 # ignore local mess deps
 deps.path
+
+/data
