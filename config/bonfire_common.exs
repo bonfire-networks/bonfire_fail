@@ -2,27 +2,16 @@ import Config
 
 default_locale = "en"
 
-config :bonfire,
+config :bonfire_common,
   localisation_path: "priv/localisation"
 
 config :bonfire_common,
-  otp_app: :bonfire,
-  ecto_repos: [Bonfire.Common.Repo]
-
-config :bonfire, Bonfire.Common.Repo,
-  database: System.get_env("POSTGRES_DB", "bonfire_dev"),
-  username: System.get_env("POSTGRES_USER", "postgres"),
-  password: System.get_env("POSTGRES_PASSWORD", "postgres"),
-  # show_sensitive_data_on_connection_error: true,
-  # EctoSparkles does the logging instead
-  log: false,
-  stacktrace: true
+  otp_app: :bonfire_common
 
 ## Localisation & internationalisation
-# TODO: determine which keys can be set at runtime vs compile-time
 
 config :bonfire_common, Bonfire.Common.Localise.Cldr,
-  otp_app: :bonfire,
+  otp_app: :bonfire_common,
   default_locale: default_locale,
   # locales that will be made available on top of those for which gettext localisation files are available
   locales: ["fr", "en", "es"],

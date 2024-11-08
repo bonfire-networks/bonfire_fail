@@ -2,7 +2,7 @@
   "accessible": {:hex, :accessible, "0.3.0", "932f6ade6ea839212fea1735ab4ffdc39a3843a622f2ea5d28f0ab41c14b4435", [:mix], [], "hexpm", "13a11b0611ab82f7b9098a88465b5674f729c02bd613216243c123c65f90f296"},
   "arrows": {:hex, :arrows, "0.2.0", "11c078b52303413a987aa39c63d82d4b1b1d18f52bb0437de168c1010b396dbe", [:mix], [], "hexpm", "4c09a0b1084c6d40d7cbac68ec803eec0e3ecb7624cc693efdd79f17598e6085"},
   "beam_file": {:hex, :beam_file, "0.6.2", "efd54ec60be6a03f0a8f96f72b0353427196613289c46032d3500f0ab6c34d32", [:mix], [], "hexpm", "09a99e8e5aad674edcad7213b0d7602375dfd3c7d02f8e3136e3efae0bcc9c56"},
-  "bonfire_common": {:git, "https://github.com/bonfire-networks/bonfire_common", "529f60e9857c1e1ab762eb66ad90449bd995f2fa", []},
+  "bonfire_common": {:git, "https://github.com/bonfire-networks/bonfire_common", "afbd78d7cc7c52356737a28aa180391255d5be8c", []},
   "bonfire_data_edges": {:git, "https://github.com/bonfire-networks/bonfire_data_edges", "224212f3eb98bb2a534b4241b92b30dc30d0580b", []},
   "bonfire_data_identity": {:git, "https://github.com/bonfire-networks/bonfire_data_identity", "f85a23060dd0cc7452b4cb9e96e655db12f3d488", []},
   "brex_result": {:hex, :brex_result, "0.4.0", "c4f2a4a5b487c3d4cd0c94cef5df596eeae986c1dc7cfe08755efc7e766610eb", [:mix], [], "hexpm", "c221aac71c48727ef55dc56cf845772a54e1db538564280c868eb0595e1e44f8"},
