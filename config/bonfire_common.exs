@@ -6,12 +6,12 @@ config :bonfire_common,
   localisation_path: "priv/localisation"
 
 config :bonfire_common,
-  otp_app: :bonfire_common
+  otp_app: :bonfire_fail
 
 ## Localisation & internationalisation
 
 config :bonfire_common, Bonfire.Common.Localise.Cldr,
-  otp_app: :bonfire_common,
+  otp_app: :bonfire_fail,
   default_locale: default_locale,
   # locales that will be made available on top of those for which gettext localisation files are available
   locales: ["fr", "en", "es"],
