@@ -40,6 +40,7 @@ defmodule Bonfire.Fail.RuntimeConfig do
         spam:
           {403,
            l("Could not continue. You may need to get in touch with the instance moderators.")},
+        not_permitted: {403, l("You do not have permission %s")},
         unauthorized: {403, l("You do not have permission %s")},
         # eh, anglos
         unauthorised: {403, l("You do not have permission %s")},
