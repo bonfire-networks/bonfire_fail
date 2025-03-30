@@ -1,3 +1,3 @@
 import Config
 
-Bonfire.Fail.RuntimeConfig.config()
+Bonfire.Common.Config.LoadExtensionsConfig.load_configs(Bonfire.Fail.RuntimeConfig)

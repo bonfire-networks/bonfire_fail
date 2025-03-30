@@ -5,9 +5,6 @@ default_locale = "en"
 config :bonfire_common,
   localisation_path: "priv/localisation"
 
-config :bonfire_common,
-  otp_app: :bonfire_fail
-
 ## Localisation & internationalisation
 
 config :bonfire_common, Bonfire.Common.Localise.Cldr,
