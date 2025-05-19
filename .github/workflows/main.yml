@@ -32,11 +32,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-
-    name: Build and test
+  build_and_test:
+    name: Prepare Localisation, Test, Lint
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Run tests
+
+    - name: Run CI 
       uses: bonfire-networks/bonfire-extension-ci-action@latest
+      with:
+        tx-token: ${{ secrets.TX_TOKEN || vars.TX_TOKEN }}
