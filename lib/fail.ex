@@ -39,6 +39,9 @@ defmodule Bonfire.Fail do
       iex> Bonfire.Fail.fail(:not_found)
       %Bonfire.Fail{code: :not_found, message: "Not Found", status: 404}
 
+      iex> Bonfire.Fail.fail(:unauthorized, "Access denied")
+      %Bonfire.Fail{code: :unauthorized, message: "Unauthorized: Access denied", status: 401}
+      
       iex> Bonfire.Fail.fail({:error, :unauthorized}, "Access denied")
       %Bonfire.Fail{code: :unauthorized, message: "Unauthorized: Access denied", status: 401}
   """
