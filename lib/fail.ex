@@ -277,7 +277,7 @@ defmodule Bonfire.Fail do
     show = String.replace(message, "%s", extra || "")
 
     if show == message do
-      "#{show} #{extra}"
+      String.trim_trailing("#{show} #{extra}")
     else
       show
     end
