@@ -114,7 +114,7 @@ defmodule Bonfire.Fail do
 
         return(struct, %{
           code: status,
-          message: "#{message} #{extra}",
+          message: String.trim("#{message} #{extra}"),
           status: status
         })
 
