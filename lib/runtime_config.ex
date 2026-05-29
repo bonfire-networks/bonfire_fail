@@ -55,6 +55,9 @@ defmodule Bonfire.Fail.RuntimeConfig do
         email_not_confirmed: {403, l("Please confirm your email address first.")},
         not_found: {404, l("%s Not Found.")},
         user_not_found: {404, l("User not found.")},
+        file_too_large: {415, l("This file exceeds the maximum upload size of %s")},
+        file_type_not_allowed: {415, l("Files with the format of %s are not allowed")},
+        too_many_files: {422, l("You have selected too many files.")},
         unknown: {500, l("Something went wrong.")},
         nil: {500, l("There was an error.")},
         nil: {503, l("The server is overloaded.")}
