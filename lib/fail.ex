@@ -108,7 +108,7 @@ defmodule Bonfire.Fail do
   end
 
   defp handle(message, extra, struct) when is_binary(message) do
-    case Bonfire.Common.Types.maybe_to_atom(message) do
+    case Bonfire.Common.Types.maybe_to_atom!(message) do
       nil ->
         status = 500
 
