@@ -2,7 +2,7 @@ defmodule Bonfire.Fail.RuntimeConfig do
   use Bonfire.Common.Localise
   import Bonfire.Common.Modularity.DeclareHelpers
 
-  declare_extension("Fail",
+  declare_extension(l("Fail"),
     icon: "ri:alert-fill",
     emoji: "⚠️",
     description: l("Common error messages and failure handling.")
