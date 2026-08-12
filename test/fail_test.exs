@@ -1,6 +1,9 @@
 defmodule Bonfire.FailTest do
   use ExUnit.Case, async: true
 
+  # bucket this into the backend CI leg: bare `ExUnit.Case` skips the tag the extension case templates apply, so without it this also runs in the federation job catch-all
+  @moduletag :backend
+
   test "fail/1 with an arbitrary string that has no matching atom returns status 500" do
     result = Bonfire.Fail.fail("a_totally_unique_string_qwerty_987_no_atom")
     assert %Bonfire.Fail{status: 500} = result
